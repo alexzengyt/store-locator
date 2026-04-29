@@ -40,8 +40,7 @@ class StoreResponse(BaseModel):
     distance_miles: Optional[float] = None
     is_open_now: Optional[bool] = None
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class StoreCreate(BaseModel):
@@ -98,8 +97,7 @@ class UserResponse(BaseModel):
     is_active: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class LoginRequest(BaseModel):

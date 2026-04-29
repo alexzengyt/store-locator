@@ -4,7 +4,7 @@ from app.database import get_db
 from app.models import User, RefreshToken
 from app.schemas import UserCreate, LoginRequest, TokenResponse, RefreshRequest
 from app.utils import hash_password, verify_password, create_access_token, create_refresh_token, decode_token
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import hashlib
 import os
 
@@ -24,7 +24,7 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     db_token = RefreshToken(
         token_hash=token_hash,
         user_id=user.id,
-        expires_at=datetime.utcnow() + timedelta(days=int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", 7)))
+        expires_at=datetime.now(timezone.utc) + timedelta(days=int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", 7)))
     )
     db.add(db_token)
     db.commit()
@@ -44,7 +44,7 @@ def refresh(request: RefreshRequest, db: Session = Depends(get_db)):
         RefreshToken.is_revoked == False
     ).first()
 
-    if not db_token or db_token.expires_at < datetime.utcnow():
+    if not db_token or db_token.expires_at < datetime.now(timezone.utc):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token expired or revoked")
 
     access_token = create_access_token(user_id)

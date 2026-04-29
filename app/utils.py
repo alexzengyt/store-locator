@@ -4,7 +4,7 @@ import requests
 import jwt
 import bcrypt
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from collections import defaultdict
 import threading
@@ -63,7 +63,7 @@ def verify_password(plain: str, hashed: str) -> bool:
 def create_access_token(user_id: int) -> str:
     payload = {
         "user_id": user_id,
-        "exp": datetime.utcnow() + timedelta(minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 15)))
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 15)))
     }
     return jwt.encode(payload, os.getenv("JWT_SECRET_KEY"), algorithm=os.getenv("JWT_ALGORITHM", "HS256"))
 
@@ -71,7 +71,7 @@ def create_access_token(user_id: int) -> str:
 def create_refresh_token(user_id: int) -> str:
     payload = {
         "user_id": user_id,
-        "exp": datetime.utcnow() + timedelta(days=int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", 7)))
+        "exp": datetime.now(timezone.utc) + timedelta(days=int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", 7)))
     }
     return jwt.encode(payload, os.getenv("JWT_SECRET_KEY"), algorithm=os.getenv("JWT_ALGORITHM", "HS256"))
 
@@ -87,7 +87,7 @@ _rate_limit_store = defaultdict(list)
 _lock = threading.Lock()
 
 def check_rate_limit(ip: str, max_requests: int, window_seconds: int) -> bool:
-    now = datetime.utcnow().timestamp()
+    now = datetime.now(timezone.utc).timestamp()
     with _lock:
         timestamps = _rate_limit_store[ip]
         _rate_limit_store[ip] = [t for t in timestamps if now - t < window_seconds]

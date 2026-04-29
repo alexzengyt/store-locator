@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Float, Integer, DateTime, Text, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 from app.database import Base
 
 
@@ -27,8 +27,8 @@ class Store(Base):
     hours_fri = Column(String(20))
     hours_sat = Column(String(20))
     hours_sun = Column(String(20))
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
 
 class User(Base):
@@ -40,7 +40,7 @@ class User(Base):
     hash_password = Column(String(255), nullable=False)
     role = Column(String(50), nullable=False, default="viewer")
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
 
     refresh_tokens = relationship("RefreshToken", back_populates="user")
 
@@ -53,6 +53,6 @@ class RefreshToken(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     expires_at = Column(DateTime, nullable=False)
     is_revoked = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
 
     user = relationship("User", back_populates="refresh_tokens")
