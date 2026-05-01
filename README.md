@@ -162,6 +162,19 @@ Coverage target: 60% minimum (current: 71%)
 
 ---
 
+## Project Management
+
+This project was managed using Jira (Scrum methodology), with work broken down into sprints covering setup, feature development, testing, and deployment.
+
+- **Jira Board**: [Store Locator API Project](https://alexzeng.atlassian.net/jira/software/projects/SCRUM/boards/1)
+- **Methodology**: Scrum
+- **Sprints completed**: Setup & Infrastructure, Store Search, Store Management, Authentication & Authorization, Testing & Documentation, Deployment
+- **Sprint7 In progress**: Docker containerization, CI/CD pipeline
+- **Backlog**: Planned features including store ratings system, Email notifications for critical events and more
+
+![Jira Backlog](jira.png)
+
+
 ## Deployment
 
 - **Platform**: Render
