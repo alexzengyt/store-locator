@@ -38,7 +38,7 @@ def geocode_address(address: str) -> tuple[float, float]:
         return data["lat"], data["lon"]
     
     url = "https://nominatim.openstreetmap.org/search"
-    params = {"q": address, "format": "json", "limit": 1}
+    params = {"q": address, "format": "json", "limit": 1, "countrycodes": "us"}
     headers = {"User-Agent": "store-locator-app"}
     response = requests.get(url, params=params, headers=headers, timeout=10)
     results = response.json()
