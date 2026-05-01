@@ -16,7 +16,8 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
     if not user or not verify_password(request.password, user.hash_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
-
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Account is deactivated")
     access_token = create_access_token(user.id)
     refresh_token = create_refresh_token(user.id)
 
@@ -44,7 +45,7 @@ def refresh(request: RefreshRequest, db: Session = Depends(get_db)):
         RefreshToken.is_revoked == False
     ).first()
 
-    if not db_token or db_token.expires_at < datetime.now(timezone.utc):
+    if not db_token or db_token.expires_at < datetime.now(timezone.utc).replace(tzinfo=None):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token expired or revoked")
 
     access_token = create_access_token(user_id)

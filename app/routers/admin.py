@@ -80,6 +80,8 @@ def deactivate_store(
     if not store:
         raise HTTPException(status_code=404, detail="Store not found")
 
+    if store.status == "inactive":
+        raise HTTPException(status_code=400, detail="Store is already inactive")
     store.status = "inactive"
     db.commit()
     return {"message": f"Store {store_id} deactivated"}
@@ -201,6 +203,8 @@ def deactivate_user(
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    if not user.is_active:
+        raise HTTPException(status_code=400, detail="User is already inactive")
     user.is_active = False
     db.commit()
     return {"message": f"User {user_id} deactivated"}
